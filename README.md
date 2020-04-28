@@ -1,5 +1,7 @@
 # Foreplay
 
+![CI](https://github.com/eberkund/foreplay/workflows/CI/badge.svg)
+
 A precommit hook manager.
 
 ### How is this different from precommit?
