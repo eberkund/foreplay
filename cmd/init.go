@@ -3,15 +3,13 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path"
 
 	"github.com/spf13/cobra"
 )
 
-// installCmd represents the install command
-var installCmd = &cobra.Command{
-	Use:   "install",
+// initCmd represents the init command
+var initCmd = &cobra.Command{
+	Use:   "init",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -19,18 +17,20 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: runInstall,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("init called")
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(initCmd)
 }
 
-func runInstall(cmd *cobra.Command, args []string) {
-	fmt.Println("install called")
-	wd, _ := os.Getwd()
-	preCommitHookPath := path.Join(wd, ".git", "hooks", "pre-commit")
-	_ = ioutil.WriteFile(preCommitHookPath, []byte(`#!/usr/bin/env bash
-foreplay run
+func runInit(cmd *cobra.Command, args []string) {
+	ioutil.WriteFile(".foreplay.yml", []byte(`hooks:
+#  - id: golangci-lint
+#    command: golangci-lint
+#    args: run
+#    hook: pre-commit
 `), 0755)
 }

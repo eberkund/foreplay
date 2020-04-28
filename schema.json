@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/Config",
+  "definitions": {
+    "Config": {
+      "required": [
+        "Hooks"
+      ],
+      "properties": {
+        "Hooks": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Hook"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Hook": {
+      "required": [
+        "Id",
+        "Command",
+        "Args"
+      ],
+      "properties": {
+        "Id": {
+          "type": "string"
+        },
+        "Command": {
+          "type": "string"
+        },
+        "Args": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  }
+}
