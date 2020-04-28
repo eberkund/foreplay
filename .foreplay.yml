@@ -4,6 +4,11 @@ hooks:
     args: [run]
     hook: pre-commit
 
+  - id: go build
+    command: go
+    args: [build]
+    hook: pre-commit
+
 #  - id: eslint
 #    command: npm
 #    args: run lint

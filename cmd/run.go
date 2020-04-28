@@ -8,8 +8,6 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
-	"github.com/vbauerster/mpb"
-	"github.com/vbauerster/mpb/decor"
 	"gopkg.in/yaml.v2"
 )
 
@@ -32,10 +30,10 @@ type Config struct {
 }
 
 type Hook struct {
-	Id         string
-	Command    string
-	Args       []string
-	WorkingDir string
+	Id      string   `yaml:"id"`
+	Command string   `yaml:"command"`
+	Args    []string `yaml:"args"`
+	Working string   `yaml:"working"`
 }
 
 func init() {
@@ -47,53 +45,49 @@ func runRun(cmd *cobra.Command, args []string) {
 	var c Config
 	data, err := ioutil.ReadFile(".foreplay.yml")
 	if err != nil {
+		println("could not read config file")
 		panic(err)
 	}
 	err = yaml.Unmarshal(data, &c)
 	if err != nil {
+		println("could not parse config file")
 		panic(err)
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(c.Hooks))
 
 	wd, _ := os.Getwd()
 	fmt.Println(wd)
 
-	var wg sync.WaitGroup
-	progress := mpb.New(
-		mpb.WithWaitGroup(&wg),
-		mpb.WithWidth(40),
-	)
-	wg.Add(len(c.Hooks))
+	fmt.Printf("%d hook(s) listed\n", len(c.Hooks))
 
 	for _, v := range c.Hooks {
+
 		go func(v Hook) {
-			spinner := progress.AddSpinner(
-				int64(len(c.Hooks)),
-				mpb.SpinnerOnLeft,
-				mpb.SpinnerStyle([]string{"∙∙∙", "●∙∙", "∙●∙", "∙∙●", "∙∙∙"}),
-				mpb.PrependDecorators(
-					decor.Name(v.Id),
-				),
-				mpb.AppendDecorators(
-					decor.OnComplete(
-						decor.Elapsed(decor.ET_STYLE_GO), "done",
-					),
-				),
-			)
+			println(v.Id)
 
-			cmd := exec.Command(v.Command, v.Args...)
-			err := cmd.Run()
-			//out, err := cmd.CombinedOutput()
-			//fmt.Println(string(out))
-
-			if err != nil {
-				//fmt.Println("problem encountered: ", err)
-				os.Exit(1)
+			if v.Working != "" {
+				err := os.Chdir(v.Working)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
 			}
 
-			spinner.SetTotal(1, true)
+			cmd := exec.Command(v.Command, v.Args...)
+
+			out, err := cmd.CombinedOutput()
+			fmt.Println(string(out))
+
+			if err != nil {
+				fmt.Println("problem encountered: ", err)
+				os.Exit(1)
+			}
 			wg.Done()
 		}(v)
+
 	}
 
-	progress.Wait()
+	wg.Wait()
 }
