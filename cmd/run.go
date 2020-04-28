@@ -56,6 +56,7 @@ func runRun(cmd *cobra.Command, args []string) {
 
 		if err != nil {
 			fmt.Println("problem encountered: ", err)
+			os.Exit(1)
 		} else {
 			fmt.Println("all ok")
 		}

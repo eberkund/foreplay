@@ -31,6 +31,6 @@ func runInstall(cmd *cobra.Command, args []string) {
 	wd, _ := os.Getwd()
 	preCommitHookPath := path.Join(wd, ".git", "hooks", "pre-commit")
 	_ = ioutil.WriteFile(preCommitHookPath, []byte(`#!/usr/bin/env bash
-foreplay run
+exec foreplay run
 `), 0755)
 }

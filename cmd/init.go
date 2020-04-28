@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
-
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +15,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("init called")
-	},
+	Run: runInit,
 }
 
 func init() {
@@ -27,7 +23,7 @@ func init() {
 }
 
 func runInit(cmd *cobra.Command, args []string) {
-	ioutil.WriteFile(".foreplay.yml", []byte(`hooks:
+	_ = afero.WriteFile(afero.OsFs{}, ".foreplay.yml", []byte(`hooks:
 #  - id: golangci-lint
 #    command: golangci-lint
 #    args: run
