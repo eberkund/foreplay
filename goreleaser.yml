@@ -1,0 +1,36 @@
+env:
+  - GOPROXY=https://proxy.golang.org
+  - CGO_ENABLED=0
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - binary: simulator
+    ldflags: -s -w
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+
+archives:
+  - format: zip
+    files:
+      - README.md
+      - screenshot.png
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
