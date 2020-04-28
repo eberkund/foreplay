@@ -95,4 +95,5 @@ func runRun(cmd *cobra.Command, args []string) {
 	for _, r := range results {
 		fmt.Printf("%s\t%+v\n", r.Hook.ID, r.Err == nil)
 	}
+	println()
 }
