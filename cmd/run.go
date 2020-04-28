@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"sync"
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
@@ -92,8 +93,20 @@ func runRun(cmd *cobra.Command, args []string) {
 	}
 	wg.Wait()
 	s.Stop()
+
+	table := tablewriter.NewWriter(os.Stdout)
 	for _, r := range results {
-		fmt.Printf("%s\t%+v\n", r.Hook.ID, r.Err == nil)
+		var status string
+		if r.Err == nil {
+			status = "✓"
+		} else {
+			status = "✗"
+		}
+		table.Append([]string{
+			r.Hook.ID,
+			status,
+		})
 	}
+	table.Render()
 	println()
 }
