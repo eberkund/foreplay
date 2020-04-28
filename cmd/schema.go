@@ -11,7 +11,7 @@ import (
 
 var schemaCmd = &cobra.Command{
 	Use:   "schema",
-	Short: "Display config JSON schema",
+	Short: "Display the config file JSON schema.",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		printConfigSchema()

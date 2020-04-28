@@ -1,5 +1,20 @@
 hooks:
-#  - id: golangci-lint
-#    command: golangci-lint
-#    args: run
+  - id: golangci-lint
+    command: golangci-lint
+    args: [run]
+    hook: pre-commit
+
+#  - id: eslint
+#    command: npm
+#    args: run lint
 #    hook: pre-commit
+
+#  - id: test-frontend
+#    command: npm
+#    args: run test
+#    hook: pre-push
+#
+#  - id: test-backend
+#    command: go
+#    args: test ./...
+#    hook: pre-push

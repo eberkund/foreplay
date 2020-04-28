@@ -27,6 +27,24 @@ hooks:
     shell: /bin/bash
 ```
 
+```shell script
+# Register hooks
+foreplay install
+
+# Manual run
+foreplay run <hook>
+
+# Example output
+
+eslint ............ ↖
+golangci-lint ..... →
+npm test .......... ↗
+
+eslint ............ ✓
+golangci-lint ..... ✓
+npm test .......... ✗
+```
+
 # Roadmap
 
 ## v0.1
