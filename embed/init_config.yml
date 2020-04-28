@@ -1,5 +1,0 @@
-hooks:
-#  - id: golangci-lint
-#    command: golangci-lint
-#    args: run
-#    hook: pre-commit

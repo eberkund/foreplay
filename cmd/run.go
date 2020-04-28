@@ -55,14 +55,14 @@ func runRun(cmd *cobra.Command, args []string) {
 	}
 	err = yaml.Unmarshal(data, &c)
 	if err != nil {
-		println("could not parse config file")
+		println("could not unmarshal config file")
 		panic(err)
 	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(c.Hooks))
 
-	s := spinner.New(spinner.CharSets[11], 125*time.Millisecond)
+	s := spinner.New(spinner.CharSets[9], 125*time.Millisecond)
 	s.HideCursor = true
 	hookCh := make(chan *Result)
 

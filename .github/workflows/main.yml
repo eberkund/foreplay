@@ -25,11 +25,11 @@ jobs:
 #        uses: codecov/codecov-action@v1
 #        with:
 #          token: ${{ secrets.CODECOV_TOKEN }}
-#
-#      - name: Run goreleaser
-#          uses: goreleaser/goreleaser-action@v1
-#          with:
-#            version: latest
-#            args: release
-#          env:
-#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run goreleaser
+          uses: goreleaser/goreleaser-action@v1
+          with:
+            version: latest
+            args: release
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
