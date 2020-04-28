@@ -13,38 +13,28 @@ Config syntax inspired by VS Code.
 ```yaml
 hooks:
   - name: eslint
-    run: npm lint
-    working-directory: ./frontend
-    depends-on: golang-ci-lint
-    shell: node
+    run: |
+      cd frontend
+      npm lint
 
   - id: golangci-lint
     run: golangci-lint run
-    working-directory: ./
-    shell: powershell
-
-  - name: test
-    script: scripts/bash-example.sh
-    working-directory: ./frontend
-    shell: /bin/bash
 ```
 
-```shell script
+```
 # Register hooks
 foreplay install
 
 # Manual run
-foreplay run <hook>
+foreplay run
 
 # Example output
-
-eslint ............ ↖
-golangci-lint ..... →
-npm test .......... ↗
-
-eslint ............ ✓
-golangci-lint ..... ✓
-npm test .......... ✗
+$ foreplay run
++---------------+---+
+| golangci-lint | ✓ |
+| goreleaser    | ✓ |
+| npm test      | ✗ |
++---------------+---+
 ```
 
 # Roadmap
