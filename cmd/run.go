@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
+	"sync"
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -38,6 +36,12 @@ type Hook struct {
 	Run string `yaml:"run" jsonschema:"required"`
 }
 
+type Result struct {
+	Hook *Hook
+	Err  error
+	Out  string
+}
+
 func init() {
 	rootCmd.AddCommand(runCmd)
 }
@@ -55,36 +59,39 @@ func runRun(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	//
-	//fmt.Printf("%d hook(s) listed\n", len(c.Hooks))
-	group := errgroup.Group{}
+	wg := sync.WaitGroup{}
+	wg.Add(len(c.Hooks))
 
 	s := spinner.New(spinner.CharSets[11], 125*time.Millisecond)
+	hookCh := make(chan *Result)
 
 	for _, hook := range c.Hooks {
 		hook := hook
-		println(hook.ID)
-		//spinners.AddSpinner(hook.ID)
-		group.Go(func() error {
+		go func() {
 			cmd := exec.Command("sh")
 			cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
-			_, err := cmd.CombinedOutput()
-
-			if err != nil {
-				//fmt.Println(string(out))
-				return errors.Wrapf(err, "error running %q", hook.ID)
+			out, err := cmd.CombinedOutput()
+			hookCh <- &Result{
+				Hook: &hook,
+				Err:  err,
+				Out:  string(out),
 			}
-
-			return nil
-		})
+			wg.Done()
+		}()
 	}
-
 	s.Start()
-	err = group.Wait()
+	go func() {
+		wg.Wait()
+		time.Sleep(time.Second)
+		close(hookCh)
+	}()
+	var results []*Result
+	for r := range hookCh {
+		results = append(results, r)
+	}
+	wg.Wait()
 	s.Stop()
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	for _, r := range results {
+		fmt.Printf("%s\t%+v\n", r.Hook.ID, r.Err == nil)
 	}
 }
