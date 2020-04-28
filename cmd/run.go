@@ -63,6 +63,7 @@ func runRun(cmd *cobra.Command, args []string) {
 	wg.Add(len(c.Hooks))
 
 	s := spinner.New(spinner.CharSets[11], 125*time.Millisecond)
+	s.HideCursor = true
 	hookCh := make(chan *Result)
 
 	for _, hook := range c.Hooks {
