@@ -2,25 +2,5 @@ hooks:
   - id: golangci-lint
     run: golangci-lint run
 
-  - id: go build
-    run: go build
-
-#  - id: frontend-test
-#    run: |
-#      cd frontend
-#      npm run test
-
-#  - id: eslint
-#    command: npm
-#    args: run lint
-#    hook: pre-commit
-
-#  - id: test-frontend
-#    command: npm
-#    args: run test
-#    hook: pre-push
-#
-#  - id: test-backend
-#    command: go
-#    args: test ./...
-#    hook: pre-push
+  - id: goreleaser
+    run: goreleaser --snapshot --rm-dist
