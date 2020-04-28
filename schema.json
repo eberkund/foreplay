@@ -20,22 +20,26 @@
     },
     "Hook": {
       "required": [
-        "Id",
-        "Command",
-        "Args"
+        "id",
+        "command",
+        "args",
+        "working"
       ],
       "properties": {
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Command": {
+        "command": {
           "type": "string"
         },
-        "Args": {
+        "args": {
           "items": {
             "type": "string"
           },
           "type": "array"
+        },
+        "working": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
