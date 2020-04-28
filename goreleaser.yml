@@ -20,7 +20,6 @@ archives:
   - format: zip
     files:
       - README.md
-      - screenshot.png
 
 checksum:
   name_template: "checksums.txt"
