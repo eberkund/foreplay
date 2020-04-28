@@ -1,12 +1,15 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
+	"time"
 
+	"github.com/briandowns/spinner"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
@@ -27,14 +30,12 @@ to quickly create a Cobra application.`,
 }
 
 type Config struct {
-	Hooks []*Hook
+	Hooks []Hook `yaml:"hooks" jsonschema:"required"`
 }
 
 type Hook struct {
-	Id      string   `yaml:"id"`
-	Command string   `yaml:"command"`
-	Args    []string `yaml:"args"`
-	Working string   `yaml:"working"`
+	ID  string `yaml:"id" jsonschema:"required"`
+	Run string `yaml:"run" jsonschema:"required"`
 }
 
 func init() {
@@ -42,7 +43,6 @@ func init() {
 }
 
 func runRun(cmd *cobra.Command, args []string) {
-	fmt.Println("run called")
 	var c Config
 	data, err := ioutil.ReadFile(".foreplay.yml")
 	if err != nil {
@@ -55,34 +55,36 @@ func runRun(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	wd, _ := os.Getwd()
-	fmt.Println(wd)
-
-	fmt.Printf("%d hook(s) listed\n", len(c.Hooks))
+	//
+	//fmt.Printf("%d hook(s) listed\n", len(c.Hooks))
 	group := errgroup.Group{}
+
+	s := spinner.New(spinner.CharSets[11], 125*time.Millisecond)
 
 	for _, hook := range c.Hooks {
 		hook := hook
+		println(hook.ID)
+		//spinners.AddSpinner(hook.ID)
 		group.Go(func() error {
-			println(hook.Id)
+			cmd := exec.Command("sh")
+			cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
+			_, err := cmd.CombinedOutput()
 
-			p := path.Join(wd, hook.Working)
-			println(p)
-			err := os.Chdir(p)
 			if err != nil {
-				return err
+				//fmt.Println(string(out))
+				return errors.Wrapf(err, "error running %q", hook.ID)
 			}
 
-			out, err := exec.Command(hook.Command, hook.Args...).CombinedOutput()
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(string(out))
 			return nil
 		})
 	}
-	if err := group.Wait(); err != nil {
+
+	s.Start()
+	err = group.Wait()
+	s.Stop()
+
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }

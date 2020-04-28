@@ -4,10 +4,10 @@
   "definitions": {
     "Config": {
       "required": [
-        "Hooks"
+        "hooks"
       ],
       "properties": {
-        "Hooks": {
+        "hooks": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/Hook"
@@ -21,24 +21,13 @@
     "Hook": {
       "required": [
         "id",
-        "command",
-        "args",
-        "working"
+        "run"
       ],
       "properties": {
         "id": {
           "type": "string"
         },
-        "command": {
-          "type": "string"
-        },
-        "args": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "working": {
+        "run": {
           "type": "string"
         }
       },

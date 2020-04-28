@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 env:
-  GOFLAGS: -mod=readonly
+  GOFLAGS: -mod=readonly -ldflags=-w
 
 jobs:
   test:
