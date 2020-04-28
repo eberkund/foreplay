@@ -5,9 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"sync"
+	"path"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,7 +27,7 @@ to quickly create a Cobra application.`,
 }
 
 type Config struct {
-	Hooks []Hook
+	Hooks []*Hook
 }
 
 type Hook struct {
@@ -54,40 +55,30 @@ func runRun(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(len(c.Hooks))
-
 	wd, _ := os.Getwd()
 	fmt.Println(wd)
 
 	fmt.Printf("%d hook(s) listed\n", len(c.Hooks))
+	group := errgroup.Group{}
 
-	for _, v := range c.Hooks {
+	for _, hook := range c.Hooks {
+		hook := hook
+		group.Go(func() error {
+			println(hook.Id)
 
-		go func(v Hook) {
-			println(v.Id)
-
-			if v.Working != "" {
-				err := os.Chdir(v.Working)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
+			p := path.Join(wd, hook.Working)
+			err := os.Chdir(p)
+			if err != nil {
+				return err
 			}
 
-			cmd := exec.Command(v.Command, v.Args...)
-
+			cmd := exec.Command(hook.Command, hook.Args...)
 			out, err := cmd.CombinedOutput()
 			fmt.Println(string(out))
-
-			if err != nil {
-				fmt.Println("problem encountered: ", err)
-				os.Exit(1)
-			}
-			wg.Done()
-		}(v)
-
+			return err
+		})
 	}
-
-	wg.Wait()
+	if err := group.Wait(); err != nil {
+		os.Exit(1)
+	}
 }
