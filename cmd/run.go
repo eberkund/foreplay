@@ -17,7 +17,7 @@ import (
 var runCmd = &cobra.Command{
 	Use:   "run [hook]",
 	Short: "Run hooks.",
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.NoArgs,
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

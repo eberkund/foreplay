@@ -12,6 +12,7 @@ import (
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
+	Args:  cobra.NoArgs,
 	Short: "Install shims into `.git/hooks.`",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
