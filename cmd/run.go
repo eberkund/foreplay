@@ -67,15 +67,19 @@ func runRun(cmd *cobra.Command, args []string) {
 			println(hook.Id)
 
 			p := path.Join(wd, hook.Working)
+			println(p)
 			err := os.Chdir(p)
 			if err != nil {
 				return err
 			}
 
-			cmd := exec.Command(hook.Command, hook.Args...)
-			out, err := cmd.CombinedOutput()
+			out, err := exec.Command(hook.Command, hook.Args...).CombinedOutput()
+			if err != nil {
+				return err
+			}
+
 			fmt.Println(string(out))
-			return err
+			return nil
 		})
 	}
 	if err := group.Wait(); err != nil {
