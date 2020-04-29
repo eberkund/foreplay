@@ -6,6 +6,7 @@ require (
 	github.com/alecthomas/jsonschema v0.0.0-20200217214135-7152f22193c9
 	github.com/fatih/color v1.9.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
+	github.com/mattn/go-isatty v0.0.11
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.2.2
