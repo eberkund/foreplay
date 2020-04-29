@@ -4,3 +4,6 @@ hooks:
 
   - id: goreleaser
     run: goreleaser --snapshot --rm-dist
+
+  - id: go test
+    run: go test ./...

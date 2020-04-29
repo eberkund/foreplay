@@ -4,18 +4,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"foreplay/config"
+
 	"github.com/k0kubun/go-ansi"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/yaml.v2"
 )
 
 // runCmd represents the run command
@@ -26,29 +26,36 @@ var runCmd = &cobra.Command{
 	Run:   runRun,
 }
 
-type Config struct {
-	Hooks []*Hook `yaml:"hooks" jsonschema:"required"`
-}
-
-type Hook struct {
-	ID      string `yaml:"id" jsonschema:"required"`
-	Run     string `yaml:"run" jsonschema:"required"`
+type hookJob struct {
+	config.Hook
 	success *bool
-	count   int
+	ticks   int
 }
 
 func init() {
 	rootCmd.AddCommand(runCmd)
 }
 
+func createHookJobs() []*hookJob {
+	c, err := config.Get()
+	if err != nil {
+		panic(err)
+	}
+	var jobs []*hookJob
+	for _, v := range c.Hooks {
+		jobs = append(jobs, &hookJob{Hook: v})
+	}
+	return jobs
+}
+
 func runRun(cmd *cobra.Command, args []string) {
-	c := getConfig()
+	jobs := createHookJobs()
 
 	ansi.CursorHide()
 	defer ansi.CursorShow()
 
-	err := run(c.Hooks)
-	refresh(c.Hooks, false)
+	err := run(jobs)
+	refresh(jobs, false)
 
 	if err != nil {
 		fmt.Printf("%+v\n", err)
@@ -56,15 +63,13 @@ func runRun(cmd *cobra.Command, args []string) {
 	}
 }
 
-func run(hooks []*Hook) error {
+func run(hooks []*hookJob) error {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 	tick := time.NewTicker(125 * time.Millisecond)
-
-	done := make(chan interface{})
+	done := make(chan error)
 	group := errgroup.Group{}
 
-	var hookErr error
 	for _, hook := range hooks {
 		hook := hook
 		group.Go(func() error {
@@ -75,8 +80,7 @@ func run(hooks []*Hook) error {
 		})
 	}
 	go func() {
-		hookErr = group.Wait()
-		close(done)
+		done <- group.Wait()
 	}()
 	for {
 		select {
@@ -84,39 +88,24 @@ func run(hooks []*Hook) error {
 			refresh(hooks, true)
 		case <-exit:
 			return errors.New("user exited")
-		case <-done:
-			return hookErr
+		case err := <-done:
+			return err
 		}
 	}
 }
 
-func getConfig() *Config {
-	var c Config
-	data, err := ioutil.ReadFile(".foreplay.yml")
-	if err != nil {
-		println("could not read config file")
-		panic(err)
-	}
-	err = yaml.Unmarshal(data, &c)
-	if err != nil {
-		println("could not unmarshal config file")
-		panic(err)
-	}
-	return &c
-}
-
-func runHook(hook *Hook) ([]byte, error) {
+func runHook(hook *hookJob) ([]byte, error) {
 	cmd := exec.Command("sh")
 	cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
 	return cmd.CombinedOutput()
 }
 
-func (h Hook) progressChar() string {
+func (h hookJob) progressChar() string {
 	charSet := []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
 	successSymbol := "✓"
 	errorSymbol := "✗"
 	if h.success == nil {
-		return charSet[h.count%len(charSet)]
+		return charSet[h.ticks%len(charSet)]
 	}
 	if *h.success {
 		return successSymbol
@@ -124,10 +113,11 @@ func (h Hook) progressChar() string {
 	return errorSymbol
 }
 
-func refresh(hooks []*Hook, reset bool) {
-	table := tablewriter.NewWriter(os.Stdout)
+func refresh(hooks []*hookJob, reset bool) {
+	stdout := ansi.NewAnsiStdout()
+	table := tablewriter.NewWriter(stdout)
 	for _, v := range hooks {
-		v.count++
+		v.ticks++
 		table.Append([]string{
 			v.ID,
 			v.progressChar(),

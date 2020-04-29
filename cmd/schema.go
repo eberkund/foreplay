@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"foreplay/config"
+
 	"github.com/alecthomas/jsonschema"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -23,7 +25,7 @@ func init() {
 }
 
 func printConfigSchema() {
-	schema := jsonschema.Reflect(&Config{})
+	schema := jsonschema.Reflect(&config.Config{})
 	result, err := json.MarshalIndent(schema, "", "  ")
 	if err != nil {
 		logrus.WithError(err).Fatal("could not marshal schema to JSON")
