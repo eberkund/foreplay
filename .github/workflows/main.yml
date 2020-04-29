@@ -21,6 +21,11 @@ jobs:
       - name: Go Test
         run: go test ./... -coverpkg=./... -covermode=count -coverprofile=coverage.txt
 
+      - name: codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Run goreleaser
         uses: goreleaser/goreleaser-action@v1
         with:

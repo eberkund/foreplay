@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -15,7 +15,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"
-	"github.com/mattn/go-isatty"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
@@ -98,7 +97,13 @@ func run(hooks []*hookJob) error {
 }
 
 func runHook(hook *hookJob) ([]byte, error) {
-	cmd := exec.Command("sh")
+	var name string
+	if runtime.GOOS == "windows" {
+		name = "C:\\Program Files\\Git\\usr\\bin\\sh"
+	} else {
+		name = "sh"
+	}
+	cmd := exec.Command(name)
 	cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
 	return cmd.CombinedOutput()
 }
@@ -117,13 +122,7 @@ func (h hookJob) progressChar() string {
 }
 
 func refresh(hooks []*hookJob, reset bool) {
-	var writer io.Writer
-	if isatty.IsCygwinTerminal(os.Stdout.Fd()) {
-		writer = os.Stdout
-	} else {
-		writer = ansi.NewAnsiStdout()
-	}
-	table := tablewriter.NewWriter(writer)
+	table := tablewriter.NewWriter(ansi.NewAnsiStdout())
 	for _, v := range hooks {
 		v.ticks++
 		table.Append([]string{
@@ -133,6 +132,6 @@ func refresh(hooks []*hookJob, reset bool) {
 	}
 	table.Render()
 	if reset {
-		ansi.CursorPreviousLine(len(hooks) + 2)
+		ansi.CursorUp(len(hooks) + 2)
 	}
 }

@@ -1,6 +1,7 @@
 # Foreplay
 
 ![CI](https://github.com/eberkund/foreplay/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/eberkund/foreplay/branch/master/graph/badge.svg)](https://codecov.io/gh/eberkund/foreplay)
 
 A precommit hook manager.
 
