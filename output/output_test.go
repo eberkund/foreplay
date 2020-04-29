@@ -17,6 +17,7 @@ func TestParseDriver(t *testing.T) {
 	}{
 		{"spinner", spinner.New()},
 		{"plain", plain.New()},
+		{"foobar", nil},
 	}
 	for _, tc := range cases {
 		t.Run(tc.Input, func(t *testing.T) {

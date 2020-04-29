@@ -8,8 +8,3 @@ hooks:
 
   - id: go test
     run: go test ./...
-
-  - id: schema
-    run: |
-      go run . schema > schema.json
-      git diff --quiet schema.json
