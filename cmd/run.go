@@ -2,15 +2,18 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"sync"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/briandowns/spinner"
-	"github.com/olekukonko/tablewriter"
+	"github.com/k0kubun/go-ansi"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -23,18 +26,14 @@ var runCmd = &cobra.Command{
 }
 
 type Config struct {
-	Hooks []Hook `yaml:"hooks" jsonschema:"required"`
+	Hooks []*Hook `yaml:"hooks" jsonschema:"required"`
 }
 
 type Hook struct {
-	ID  string `yaml:"id" jsonschema:"required"`
-	Run string `yaml:"run" jsonschema:"required"`
-}
-
-type Result struct {
-	Hook *Hook
-	Err  error
-	Out  string
+	ID      string `yaml:"id" jsonschema:"required"`
+	Run     string `yaml:"run" jsonschema:"required"`
+	success *bool
+	count   int
 }
 
 func init() {
@@ -42,6 +41,54 @@ func init() {
 }
 
 func runRun(cmd *cobra.Command, args []string) {
+	c := getConfig()
+
+	ansi.CursorHide()
+	defer ansi.CursorShow()
+
+	err := run(c.Hooks)
+	refresh(c.Hooks, false)
+
+	if err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(hooks []*Hook) error {
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+	tick := time.NewTicker(125 * time.Millisecond)
+
+	done := make(chan interface{})
+	group := errgroup.Group{}
+
+	var hookErr error
+	for _, hook := range hooks {
+		hook := hook
+		group.Go(func() error {
+			_, err := runHook(hook)
+			success := err == nil
+			hook.success = &success
+			return err
+		})
+	}
+	go func() {
+		hookErr = group.Wait()
+		close(done)
+	}()
+	for {
+		select {
+		case <-tick.C:
+			refresh(hooks, true)
+		case <-exit:
+			return errors.New("user exited")
+		case <-done:
+			return hookErr
+		}
+	}
+}
+
+func getConfig() *Config {
 	var c Config
 	data, err := ioutil.ReadFile(".foreplay.yml")
 	if err != nil {
@@ -53,54 +100,34 @@ func runRun(cmd *cobra.Command, args []string) {
 		println("could not unmarshal config file")
 		panic(err)
 	}
+	return &c
+}
 
-	wg := sync.WaitGroup{}
-	wg.Add(len(c.Hooks))
+func runHook(hook *Hook) ([]byte, error) {
+	cmd := exec.Command("sh")
+	cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
+	return cmd.CombinedOutput()
+}
 
-	s := spinner.New(spinner.CharSets[9], 125*time.Millisecond)
-	s.HideCursor = true
-	hookCh := make(chan *Result)
-
-	for _, hook := range c.Hooks {
-		hook := hook
-		go func() {
-			cmd := exec.Command("sh")
-			cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
-			out, err := cmd.CombinedOutput()
-			hookCh <- &Result{
-				Hook: &hook,
-				Err:  err,
-				Out:  string(out),
-			}
-			wg.Done()
-		}()
+func (h Hook) progressChar() string {
+	charSet := []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
+	successSymbol := "✓"
+	errorSymbol := "✗"
+	if h.success == nil {
+		return charSet[h.count%len(charSet)]
 	}
-	s.Start()
-	go func() {
-		wg.Wait()
-		time.Sleep(time.Second)
-		close(hookCh)
-	}()
-	var results []*Result
-	for r := range hookCh {
-		results = append(results, r)
+	if *h.success {
+		return successSymbol
 	}
-	wg.Wait()
-	s.Stop()
+	return errorSymbol
+}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	for _, r := range results {
-		var status string
-		if r.Err == nil {
-			status = "✓"
-		} else {
-			status = "✗"
-		}
-		table.Append([]string{
-			r.Hook.ID,
-			status,
-		})
+func refresh(hooks []*Hook, reset bool) {
+	for _, v := range hooks {
+		v.count++
+		fmt.Printf("%-020s %s\n", v.ID, v.progressChar())
 	}
-	table.Render()
-	println()
+	if reset {
+		ansi.CursorPreviousLine(len(hooks))
+	}
 }
