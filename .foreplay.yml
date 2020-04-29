@@ -2,7 +2,7 @@ hooks:
   - id: golangci-lint
     run: golangci-lint run
 
-  - id: goreleaser
+  - id: goreleaser snapshot
     run: goreleaser --snapshot --rm-dist
 
   - id: go test

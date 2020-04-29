@@ -1,0 +1,3 @@
+hooks:
+  - id: golangci-lint
+    run: golangci-lint run

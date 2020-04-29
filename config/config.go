@@ -7,6 +7,8 @@ import (
 
 var fs = afero.NewOsFs()
 
+const configFile = ".foreplay.yml"
+
 type Config struct {
 	Hooks []Hook `yaml:"hooks" jsonschema:"required"`
 }
@@ -18,7 +20,7 @@ type Hook struct {
 
 func Get() (*Config, error) {
 	var c Config
-	data, err := afero.ReadFile(fs, ".foreplay.yml")
+	data, err := afero.ReadFile(fs, configFile)
 	if err != nil {
 		return nil, err
 	}
