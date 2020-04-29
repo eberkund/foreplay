@@ -12,6 +12,7 @@ import (
 
 	"foreplay/config"
 
+	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -108,9 +109,9 @@ func (h hookJob) progressChar() string {
 		return charSet[h.ticks%len(charSet)]
 	}
 	if *h.success {
-		return successSymbol
+		return color.GreenString(successSymbol)
 	}
-	return errorSymbol
+	return color.RedString(errorSymbol)
 }
 
 func refresh(hooks []*hookJob, reset bool) {
