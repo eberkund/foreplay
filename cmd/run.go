@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/k0kubun/go-ansi"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
@@ -50,6 +51,7 @@ func runRun(cmd *cobra.Command, args []string) {
 	refresh(c.Hooks, false)
 
 	if err != nil {
+		fmt.Printf("%+v\n", err)
 		os.Exit(1)
 	}
 }
@@ -123,11 +125,16 @@ func (h Hook) progressChar() string {
 }
 
 func refresh(hooks []*Hook, reset bool) {
+	table := tablewriter.NewWriter(os.Stdout)
 	for _, v := range hooks {
 		v.count++
-		fmt.Printf("%-020s %s\n", v.ID, v.progressChar())
+		table.Append([]string{
+			v.ID,
+			v.progressChar(),
+		})
 	}
+	table.Render()
 	if reset {
-		ansi.CursorPreviousLine(len(hooks))
+		ansi.CursorPreviousLine(len(hooks) + 2)
 	}
 }
