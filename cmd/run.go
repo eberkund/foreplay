@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"
+	"github.com/mattn/go-isatty"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
@@ -115,8 +117,13 @@ func (h hookJob) progressChar() string {
 }
 
 func refresh(hooks []*hookJob, reset bool) {
-	stdout := ansi.NewAnsiStdout()
-	table := tablewriter.NewWriter(stdout)
+	var writer io.Writer
+	if isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		writer = os.Stdout
+	} else {
+		writer = ansi.NewAnsiStdout()
+	}
+	table := tablewriter.NewWriter(writer)
 	for _, v := range hooks {
 		v.ticks++
 		table.Append([]string{
