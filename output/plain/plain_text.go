@@ -8,8 +8,7 @@ import (
 	"foreplay/output/common"
 )
 
-type plainPrinter struct {
-}
+type plainPrinter struct{}
 
 func (plainPrinter) Register(ctx context.Context, _ []config.Hook, results <-chan common.Result) chan interface{} {
 	done := make(chan interface{})

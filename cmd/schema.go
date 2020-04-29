@@ -25,7 +25,8 @@ func init() {
 }
 
 func printConfigSchema() {
-	schema := jsonschema.Reflect(&config.Config{})
+	reflector := jsonschema.Reflector{}
+	schema := reflector.Reflect(&config.Config{})
 	result, err := json.MarshalIndent(schema, "", "  ")
 	if err != nil {
 		logrus.WithError(err).Fatal("could not marshal schema to JSON")
