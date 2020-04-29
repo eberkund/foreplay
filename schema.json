@@ -4,9 +4,13 @@
   "definitions": {
     "Config": {
       "required": [
+        "style",
         "hooks"
       ],
       "properties": {
+        "style": {
+          "type": "string"
+        },
         "hooks": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",

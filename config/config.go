@@ -10,6 +10,7 @@ var fs = afero.NewOsFs()
 const configFile = ".foreplay.yml"
 
 type Config struct {
+	Style string `yaml:"style"`
 	Hooks []Hook `yaml:"hooks" jsonschema:"required"`
 }
 

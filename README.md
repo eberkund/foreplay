@@ -9,7 +9,15 @@ A precommit hook manager.
 
 It makes not attempt to install precommit hooks for you and as a result is a lot simpler. We assume the commands you want to run ahead of each commit have already been setup.
 
-Config syntax inspired by VS Code.
+## Two output methods
+
+For when looks are more important than personality.
+
+```yaml
+spinners: true
+```
+
+Github Actions inspired configuration syntax.
 
 ```yaml
 hooks:

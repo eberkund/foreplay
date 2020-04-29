@@ -2,25 +2,21 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
 	"os/signal"
-	"runtime"
 	"syscall"
-	"time"
 
 	"foreplay/config"
+	"foreplay/output"
+	"foreplay/output/common"
 
-	"github.com/fatih/color"
-	"github.com/k0kubun/go-ansi"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
 
-// runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run [hook]",
 	Short: "Run hooks.",
@@ -28,110 +24,62 @@ var runCmd = &cobra.Command{
 	Run:   runRun,
 }
 
-type hookJob struct {
-	config.Hook
-	success *bool
-	ticks   int
-}
-
 func init() {
 	rootCmd.AddCommand(runCmd)
 }
 
-func createHookJobs() []*hookJob {
+func runRun(cmd *cobra.Command, args []string) {
+	ctx, cancel := context.WithCancel(context.Background())
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+
 	c, err := config.Get()
 	if err != nil {
 		panic(err)
 	}
-	var jobs []*hookJob
-	for _, v := range c.Hooks {
-		jobs = append(jobs, &hookJob{Hook: v})
-	}
-	return jobs
-}
 
-func runRun(cmd *cobra.Command, args []string) {
-	jobs := createHookJobs()
+	var hookErr error
+	results := make(chan common.Result)
 
-	ansi.CursorHide()
-	defer ansi.CursorShow()
-
-	err := run(jobs)
-	refresh(jobs, false)
-
-	if err != nil {
-		fmt.Printf("%+v\n", err)
-		os.Exit(1)
-	}
-}
-
-func run(hooks []*hookJob) error {
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
-	tick := time.NewTicker(125 * time.Millisecond)
-	done := make(chan error)
+	p := output.GetOutput(c.Style)
+	cleanup := p.Register(ctx, c.Hooks, results)
 	group := errgroup.Group{}
 
-	for _, hook := range hooks {
+	for _, hook := range c.Hooks {
 		hook := hook
 		group.Go(func() error {
-			_, err := runHook(hook)
-			success := err == nil
-			hook.success = &success
+			out, err := runHook(ctx, hook)
+			results <- common.Result{
+				Hook: hook,
+				Err:  err,
+				Out:  out,
+			}
 			return err
 		})
 	}
 	go func() {
-		done <- group.Wait()
+		hookErr = group.Wait()
+		cancel()
 	}()
-	for {
-		select {
-		case <-tick.C:
-			refresh(hooks, true)
-		case <-exit:
-			return errors.New("user exited")
-		case err := <-done:
-			return err
+	func() {
+		for {
+			select {
+			case <-exit:
+				hookErr = errors.New("user exit")
+				cancel()
+			case <-ctx.Done():
+				return
+			}
 		}
+	}()
+	<-cleanup
+	if hookErr != nil {
+		os.Exit(1)
 	}
 }
 
-func runHook(hook *hookJob) ([]byte, error) {
-	var name string
-	if runtime.GOOS == "windows" {
-		name = "C:\\Program Files\\Git\\usr\\bin\\sh"
-	} else {
-		name = "sh"
-	}
-	cmd := exec.Command(name)
+func runHook(ctx context.Context, hook config.Hook) ([]byte, error) {
+	cmd := exec.CommandContext(ctx, "sh")
 	cmd.Stdin = bytes.NewBuffer([]byte(hook.Run))
-	return cmd.CombinedOutput()
-}
-
-func (h hookJob) progressChar() string {
-	charSet := []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
-	successSymbol := "✓"
-	errorSymbol := "✗"
-	if h.success == nil {
-		return charSet[h.ticks%len(charSet)]
-	}
-	if *h.success {
-		return color.GreenString(successSymbol)
-	}
-	return color.RedString(errorSymbol)
-}
-
-func refresh(hooks []*hookJob, reset bool) {
-	table := tablewriter.NewWriter(ansi.NewAnsiStdout())
-	for _, v := range hooks {
-		v.ticks++
-		table.Append([]string{
-			v.ID,
-			v.progressChar(),
-		})
-	}
-	table.Render()
-	if reset {
-		ansi.CursorUp(len(hooks) + 2)
-	}
+	return cmd.Output()
 }
