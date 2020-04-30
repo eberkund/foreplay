@@ -33,19 +33,3 @@ hooks:
   - id: golangci-lint
     run: golangci-lint run
 ```
-
-```
-# Register hooks
-foreplay install
-
-# Manual run
-foreplay run
-
-# Example output
-$ foreplay run
-+---------------+---+
-| golangci-lint | ✓ |
-| goreleaser    | ✓ |
-| npm test      | ✗ |
-+---------------+---+
-```
