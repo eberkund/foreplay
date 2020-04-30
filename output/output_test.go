@@ -15,8 +15,8 @@ func TestParseDriver(t *testing.T) {
 		Input    string
 		Expected common.Registerable
 	}{
-		{"spinner", spinner.New()},
-		{"plain", plain.New()},
+		{"spinner", spinner.New(nil)},
+		{"plain", plain.New(nil)},
 		{"foobar", nil},
 	}
 	for _, tc := range cases {

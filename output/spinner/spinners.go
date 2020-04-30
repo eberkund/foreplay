@@ -2,6 +2,7 @@ package spinner
 
 import (
 	"context"
+	"io"
 	"sort"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 type spinnerPrinter struct {
 	spinners map[string]*spinner
 	ticker   *time.Ticker
+	writer   io.Writer
 }
 
 type spinner struct {
@@ -23,10 +25,11 @@ type spinner struct {
 	ticks   int
 }
 
-func New() common.Registerable {
+func New(writer io.Writer) common.Registerable {
 	return &spinnerPrinter{
 		spinners: make(map[string]*spinner),
 		ticker:   time.NewTicker(125 * time.Millisecond),
+		writer:   writer,
 	}
 }
 
@@ -62,12 +65,15 @@ func (p *spinnerPrinter) Register(ctx context.Context, hooks []config.Hook, resu
 }
 
 func (p *spinnerPrinter) refresh(reset bool) {
+	if len(p.spinners) == 0 {
+		return
+	}
 	keys := make([]string, 0)
 	for k := range p.spinners {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	table := tablewriter.NewWriter(ansi.NewAnsiStdout())
+	table := tablewriter.NewWriter(p.writer)
 	for _, id := range keys {
 		spinner := p.spinners[id]
 		spinner.ticks++

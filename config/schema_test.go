@@ -5,7 +5,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,5 +15,9 @@ func TestSchemaMatches(t *testing.T) {
 	generated, err := Schema()
 	require.NoError(t, err)
 
-	assert.Equal(t, string(generated), string(pre))
+	require.Equal(
+		t,
+		string(generated),
+		string(pre),
+	)
 }

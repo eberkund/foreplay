@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"foreplay/config"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +23,7 @@ func init() {
 func printConfigSchema(cmd *cobra.Command, args []string) {
 	schema, err := config.Schema()
 	if err != nil {
-		logrus.WithError(err).Fatal("could not marshal schema to JSON")
+		log.Fatal("could not marshal schema to JSON")
 	}
 	fmt.Print(string(schema))
 }
