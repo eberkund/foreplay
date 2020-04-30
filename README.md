@@ -5,11 +5,11 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/eberkund/foreplay)](https://goreportcard.com/report/github.com/eberkund/foreplay)
 ![GitHub](https://img.shields.io/github/license/eberkund/foreplay)
 
-A precommit hook manager.
+A pre-commit hook manager.
 
-### How is this different from precommit?
+### How is this different from pre-commit?
 
-It makes not attempt to install precommit hooks for you and as a result is a lot simpler. We assume the commands you want to run ahead of each commit have already been setup.
+It makes not attempt to install pre-commit hooks for you and as a result is a lot simpler. We assume the commands you want to run ahead of each commit have already been setup.
 
 ## Two output methods
 
