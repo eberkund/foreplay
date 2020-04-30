@@ -19,6 +19,8 @@ For when looks are more important than personality.
 spinners: true
 ```
 
+![GitHub](./example.svg)
+
 Github Actions inspired configuration syntax.
 
 ```yaml
