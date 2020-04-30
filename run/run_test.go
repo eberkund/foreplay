@@ -7,13 +7,12 @@ import (
 
 	"foreplay/config"
 	"foreplay/output/plain"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestRunStart(t *testing.T) {
 	var buf bytes.Buffer
-	//done := make(chan interface{})
-	//printer := &mockstest.Registerable{}
-	//printer.On("Register", mock.Anything, mock.Anything, mock.Anything).Return(done)
 	cmd := exec.Command("sh")
 	runner := GetRun(
 		cmd,
@@ -26,4 +25,5 @@ func TestRunStart(t *testing.T) {
 		plain.New(&buf),
 	)
 	runner.Start()
+	require.NotEmpty(t, buf.String())
 }
