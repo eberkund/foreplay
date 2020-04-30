@@ -49,15 +49,3 @@ $ foreplay run
 | npm test      | ✗ |
 +---------------+---+
 ```
-
-# Roadmap
-
-## v0.1
-- Installs a shim in .git/hooks
-- Loads hooks from yml file
-
-## v0.2
-- Support alternative shells to invoke scripts
-
-## v0.3
-- Support embedded Go interpretter
