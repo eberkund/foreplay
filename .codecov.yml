@@ -3,3 +3,7 @@ coverage:
     project: false
     patch: false
     changes: false
+
+ignore:
+  - "mockstest"
+  - "**/*_gen.go"

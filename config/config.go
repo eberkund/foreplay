@@ -19,15 +19,15 @@ type Hook struct {
 	Run string `yaml:"run" jsonschema:"required"`
 }
 
-func Get() (*Config, error) {
+func Get() (Config, error) {
 	var c Config
 	data, err := afero.ReadFile(fs, configFile)
 	if err != nil {
-		return nil, err
+		return c, err
 	}
 	err = yaml.Unmarshal(data, &c)
 	if err != nil {
-		return nil, err
+		return c, err
 	}
-	return &c, nil
+	return c, nil
 }

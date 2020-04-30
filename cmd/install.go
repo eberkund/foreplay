@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
 	Args:  cobra.NoArgs,
@@ -22,10 +21,17 @@ func init() {
 }
 
 func runInstall(cmd *cobra.Command, args []string) {
-	fmt.Println("install called")
-	wd, _ := os.Getwd()
+	fmt.Println("installing to", path.Join(".git", "hooks"))
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 	preCommitHookPath := path.Join(wd, ".git", "hooks", "pre-commit")
-	_ = ioutil.WriteFile(preCommitHookPath, []byte(`#!/usr/bin/env bash
+	contents := `#!/usr/bin/env bash
 exec foreplay run
-`), 0755)
+`
+	err = ioutil.WriteFile(preCommitHookPath, []byte(contents), 0755)
+	if err != nil {
+		panic(err)
+	}
 }

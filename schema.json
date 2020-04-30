@@ -4,35 +4,35 @@
   "definitions": {
     "Config": {
       "required": [
-        "Checks",
-        "Initialisms",
-        "DotImportWhitelist",
-        "HTTPStatusCodeWhitelist"
+        "style",
+        "hooks"
       ],
       "properties": {
-        "Checks": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+        "style": {
+          "type": "string"
         },
-        "Initialisms": {
+        "hooks": {
           "items": {
-            "type": "string"
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Hook"
           },
           "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Hook": {
+      "required": [
+        "id",
+        "run"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
         },
-        "DotImportWhitelist": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "HTTPStatusCodeWhitelist": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+        "run": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
