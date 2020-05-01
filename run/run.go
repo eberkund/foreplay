@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -22,11 +21,6 @@ type Run struct {
 	Printer common.Registerable
 	Hooks   []config.Hook
 	exit    func(int)
-	writer  io.Writer
-}
-
-func (r *Run) SetOut(out io.Writer) {
-	r.writer = out
 }
 
 func (r Run) Start() {
