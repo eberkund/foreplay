@@ -22,7 +22,7 @@ func GetPrinter(c config.Config) common.Registerable {
 	return output.GetOutput(c.Style)
 }
 
-func GetExit() func(code int) {
+func GetExit() func(int) {
 	return os.Exit
 }
 
@@ -30,7 +30,7 @@ func GetRun(
 	cmd *exec.Cmd,
 	c config.Config,
 	printer common.Registerable,
-	exit func(code int),
+	exit func(int),
 ) *Run {
 	return &Run{
 		Shell:   cmd,
