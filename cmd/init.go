@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 )
+
+var fs = afero.NewOsFs()
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -17,10 +21,12 @@ func init() {
 }
 
 func runInit(cmd *cobra.Command, args []string) {
-	_ = afero.WriteFile(afero.OsFs{}, ".foreplay.yml", []byte(`hooks:
+	err := afero.WriteFile(fs, ".foreplay.yml", []byte(`hooks:
 #  - id: golangci-lint
-#    command: golangci-lint
-#    args: run
-#    hook: pre-commit
+#    run: run
 `), 0755)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }

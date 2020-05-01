@@ -20,6 +20,7 @@ type Run struct {
 	Shell   *exec.Cmd
 	Printer common.Registerable
 	Hooks   []config.Hook
+	exit    func(int)
 }
 
 func (r Run) Start() {
@@ -65,7 +66,7 @@ func (r Run) Start() {
 	}()
 	<-cleanup
 	if hookErr != nil {
-		os.Exit(1)
+		r.exit(1)
 	}
 }
 

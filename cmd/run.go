@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"log"
+
 	"foreplay/run"
 
 	"github.com/spf13/cobra"
@@ -20,7 +22,7 @@ func init() {
 func runRun(cmd *cobra.Command, args []string) {
 	r, err := run.InitializeRunner()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	r.Start()
 }

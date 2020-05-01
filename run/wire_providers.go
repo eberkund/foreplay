@@ -2,6 +2,7 @@ package run
 
 import (
 	"context"
+	"os"
 	"os/exec"
 
 	"foreplay/config"
@@ -21,14 +22,20 @@ func GetPrinter(c config.Config) common.Registerable {
 	return output.GetOutput(c.Style)
 }
 
+func GetExit() func(code int) {
+	return os.Exit
+}
+
 func GetRun(
 	cmd *exec.Cmd,
 	c config.Config,
 	printer common.Registerable,
+	exit func(code int),
 ) *Run {
 	return &Run{
 		Shell:   cmd,
 		Printer: printer,
 		Hooks:   c.Hooks,
+		exit:    exit,
 	}
 }
