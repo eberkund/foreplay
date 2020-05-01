@@ -9,13 +9,10 @@ import (
 
 func TestInstall(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	preCommitHookPath, err := PreCommitHookPath()
-	require.NoError(t, err)
-
-	err = Install()
+	err := Install()
 
 	require.NoError(t, err)
-	contents, err := afero.ReadFile(fs, preCommitHookPath)
+	contents, err := afero.ReadFile(fs, PreCommitHookPath())
 	require.NoError(t, err)
 	require.Equal(t, `#!/usr/bin/env bash
 exec foreplay run
