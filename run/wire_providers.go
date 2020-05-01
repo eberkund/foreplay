@@ -1,26 +1,34 @@
 package run
 
 import (
+	"errors"
 	"os"
-	"runtime"
+	"os/exec"
 
 	"foreplay/config"
 	"foreplay/output"
 	"foreplay/output/common"
 )
 
+type Shell = string
+
 func GetConfig() (config.Config, error) {
 	return config.Get()
 }
 
-func GetShell() string {
-	var command string
-	if runtime.GOOS == "windows" {
-		command = "C:/Program Files/Git/usr/bin/sh.exe"
-	} else {
-		command = "sh"
+func GetShell() (Shell, error) {
+	shells := []string{
+		"sh",
+		"bash",
+		"powershell",
 	}
-	return command
+	for _, shell := range shells {
+		cmd, err := exec.LookPath(shell)
+		if err == nil {
+			return cmd, nil
+		}
+	}
+	return "", errors.New("could not find shell to execute in")
 }
 
 func GetPrinter(c config.Config) common.Registerable {
@@ -32,13 +40,13 @@ func GetExit() func(int) {
 }
 
 func GetRun(
-	command string,
+	shell Shell,
 	c config.Config,
 	printer common.Registerable,
 	exit func(int),
 ) *Run {
 	return &Run{
-		Shell:   command,
+		Shell:   shell,
 		Printer: printer,
 		Hooks:   c.Hooks,
 		exit:    exit,

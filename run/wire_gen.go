@@ -8,13 +8,16 @@ package run
 // Injectors from wire.go:
 
 func InitializeRunner() (*Run, error) {
-	cmd := GetShell()
+	string2, err := GetShell()
+	if err != nil {
+		return nil, err
+	}
 	config, err := GetConfig()
 	if err != nil {
 		return nil, err
 	}
 	registerable := GetPrinter(config)
 	v := GetExit()
-	run := GetRun(cmd, config, registerable, v)
+	run := GetRun(string2, config, registerable, v)
 	return run, nil
 }
