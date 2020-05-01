@@ -1,6 +1,7 @@
 package output
 
 import (
+	"os"
 	"testing"
 
 	"foreplay/output/common"
@@ -21,7 +22,7 @@ func TestParseDriver(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.Input, func(t *testing.T) {
-			output := GetOutput(tc.Input)
+			output := GetOutput(tc.Input, os.Stdout)
 			assert.IsType(t, tc.Expected, output)
 		})
 	}

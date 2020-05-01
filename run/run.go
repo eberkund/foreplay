@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -17,10 +18,15 @@ import (
 )
 
 type Run struct {
-	Shell   *exec.Cmd
+	Shell   string
 	Printer common.Registerable
 	Hooks   []config.Hook
 	exit    func(int)
+	writer  io.Writer
+}
+
+func (r *Run) SetOut(out io.Writer) {
+	r.writer = out
 }
 
 func (r Run) Start() {
@@ -39,8 +45,8 @@ func (r Run) Start() {
 	for _, hook := range r.Hooks {
 		hook := hook
 		group.Go(func() error {
-			r.Shell.Stdin = bytes.NewBuffer([]byte(hook.Run))
-			out, err := r.Shell.Output()
+			cmd := r.createCmd(hook.Run)
+			out, err := cmd.Output()
 			results <- common.Result{
 				Hook: hook,
 				Err:  err,
@@ -68,6 +74,12 @@ func (r Run) Start() {
 	if hookErr != nil {
 		r.exit(1)
 	}
+}
+
+func (r Run) createCmd(script string) *exec.Cmd {
+	cmd := exec.Command(r.Shell)
+	cmd.Stdin = bytes.NewBuffer([]byte(script))
+	return cmd
 }
 
 func skip() bool {

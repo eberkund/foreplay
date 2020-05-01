@@ -3,7 +3,6 @@ package run
 import (
 	"bytes"
 	"os"
-	"os/exec"
 	"testing"
 
 	"foreplay/config"
@@ -14,9 +13,8 @@ import (
 
 func TestRunStart(t *testing.T) {
 	var buf bytes.Buffer
-	cmd := exec.Command("sh")
 	runner := GetRun(
-		cmd,
+		"sh",
 		config.Config{
 			Hooks: []config.Hook{{
 				ID:  "foo",
@@ -32,11 +30,10 @@ func TestRunStart(t *testing.T) {
 
 func TestHookError(t *testing.T) {
 	var buf bytes.Buffer
-	cmd := exec.Command("sh")
 
 	var code int
 	runner := GetRun(
-		cmd,
+		"sh",
 		config.Config{
 			Hooks: []config.Hook{{
 				ID:  "bar",

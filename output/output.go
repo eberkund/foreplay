@@ -1,21 +1,21 @@
 package output
 
 import (
-	"os"
+	"io"
 
 	"foreplay/output/common"
 	"foreplay/output/plain"
 	"foreplay/output/spinner"
 
-	"github.com/k0kubun/go-ansi"
+	"github.com/shiena/ansicolor"
 )
 
-func GetOutput(output string) common.Registerable {
+func GetOutput(output string, writer io.Writer) common.Registerable {
 	switch output {
 	case "plain":
-		return plain.New(os.Stdout)
+		return plain.New(writer)
 	case "spinner":
-		return spinner.New(ansi.NewAnsiStdout())
+		return spinner.New(ansicolor.NewAnsiColorWriter(writer))
 	}
 	return nil
 }

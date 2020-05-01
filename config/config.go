@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var fs = afero.NewOsFs()
+var Fs = afero.NewOsFs()
 
 const configFile = ".foreplay.yml"
 
@@ -24,7 +24,7 @@ type Hook struct {
 // Parses the config file and returns a struct.
 func Get() (Config, error) {
 	var c Config
-	data, err := afero.ReadFile(fs, configFile)
+	data, err := afero.ReadFile(Fs, configFile)
 	if err != nil {
 		return c, err
 	}

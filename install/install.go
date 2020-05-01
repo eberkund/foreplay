@@ -7,14 +7,14 @@ import (
 	"github.com/spf13/afero"
 )
 
-var fs = afero.NewOsFs()
+var Fs = afero.NewOsFs()
 
 func Init() error {
 	contents := `hooks:
 #  - id: golangci-lint
 #    run: run
 `
-	return afero.WriteFile(fs, ".foreplay.yml", []byte(contents), 0755)
+	return afero.WriteFile(Fs, ".foreplay.yml", []byte(contents), 0755)
 }
 
 func Install() error {
@@ -22,7 +22,7 @@ func Install() error {
 	contents := `#!/usr/bin/env bash
 exec foreplay run
 `
-	return afero.WriteFile(fs, PreCommitHookPath(), []byte(contents), 0755)
+	return afero.WriteFile(Fs, PreCommitHookPath(), []byte(contents), 0755)
 }
 
 func PreCommitHookPath() string {

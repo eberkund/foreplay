@@ -1,9 +1,8 @@
 package run
 
 import (
-	"context"
 	"os"
-	"os/exec"
+	"runtime"
 
 	"foreplay/config"
 	"foreplay/output"
@@ -14,12 +13,18 @@ func GetConfig() (config.Config, error) {
 	return config.Get()
 }
 
-func GetShell() *exec.Cmd {
-	return exec.CommandContext(context.Background(), "sh")
+func GetShell() string {
+	var command string
+	if runtime.GOOS == "windows" {
+		command = "C:/Program Files/Git/usr/bin/sh.exe"
+	} else {
+		command = "sh"
+	}
+	return command
 }
 
 func GetPrinter(c config.Config) common.Registerable {
-	return output.GetOutput(c.Style)
+	return output.GetOutput(c.Style, os.Stdout)
 }
 
 func GetExit() func(int) {
@@ -27,13 +32,13 @@ func GetExit() func(int) {
 }
 
 func GetRun(
-	cmd *exec.Cmd,
+	command string,
 	c config.Config,
 	printer common.Registerable,
 	exit func(int),
 ) *Run {
 	return &Run{
-		Shell:   cmd,
+		Shell:   command,
 		Printer: printer,
 		Hooks:   c.Hooks,
 		exit:    exit,

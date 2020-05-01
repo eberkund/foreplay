@@ -10,7 +10,7 @@ import (
 )
 
 func TestNoConfigFile(t *testing.T) {
-	fs = afero.NewMemMapFs()
+	Fs = afero.NewMemMapFs()
 	_, err := Get()
 	assert.Error(t, err)
 }
@@ -19,8 +19,8 @@ func TestCanReadConfigFile(t *testing.T) {
 	cfg, err := ioutil.ReadFile("testdata/good-config.yml")
 	require.NoError(t, err)
 
-	fs = afero.NewMemMapFs()
-	err = afero.WriteFile(fs, ".foreplay.yml", cfg, 0755)
+	Fs = afero.NewMemMapFs()
+	err = afero.WriteFile(Fs, ".foreplay.yml", cfg, 0755)
 	require.NoError(t, err)
 
 	c, err := Get()
@@ -32,8 +32,8 @@ func TestBadConfigFile(t *testing.T) {
 	cfg, err := ioutil.ReadFile("testdata/bad-config.yml")
 	require.NoError(t, err)
 
-	fs = afero.NewMemMapFs()
-	err = afero.WriteFile(fs, ".foreplay.yml", cfg, 0755)
+	Fs = afero.NewMemMapFs()
+	err = afero.WriteFile(Fs, ".foreplay.yml", cfg, 0755)
 	require.NoError(t, err)
 
 	_, err = Get()

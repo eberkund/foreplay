@@ -8,11 +8,11 @@ import (
 )
 
 func TestInstall(t *testing.T) {
-	fs = afero.NewMemMapFs()
+	Fs = afero.NewMemMapFs()
 	err := Install()
 
 	require.NoError(t, err)
-	contents, err := afero.ReadFile(fs, PreCommitHookPath())
+	contents, err := afero.ReadFile(Fs, PreCommitHookPath())
 	require.NoError(t, err)
 	require.Equal(t, `#!/usr/bin/env bash
 exec foreplay run
@@ -20,12 +20,12 @@ exec foreplay run
 }
 
 func TestInit(t *testing.T) {
-	fs = afero.NewMemMapFs()
+	Fs = afero.NewMemMapFs()
 
 	err := Init()
 
 	require.NoError(t, err)
-	contents, err := afero.ReadFile(fs, ".foreplay.yml")
+	contents, err := afero.ReadFile(Fs, ".foreplay.yml")
 	require.NoError(t, err)
 	require.Equal(t, `hooks:
 #  - id: golangci-lint

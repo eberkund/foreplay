@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"foreplay/config"
 
@@ -13,17 +12,18 @@ var schemaCmd = &cobra.Command{
 	Use:   "schema",
 	Short: "Display the config file JSON schema.",
 	Args:  cobra.NoArgs,
-	Run:   printConfigSchema,
+	RunE:  printConfigSchema,
 }
 
 func init() {
 	rootCmd.AddCommand(schemaCmd)
 }
 
-func printConfigSchema(cmd *cobra.Command, args []string) {
+func printConfigSchema(cmd *cobra.Command, args []string) error {
 	schema, err := config.Schema()
 	if err != nil {
-		log.Fatal("could not marshal schema to JSON")
+		return err
 	}
-	fmt.Print(string(schema))
+	_, err = fmt.Fprint(cmd.OutOrStderr(), string(schema))
+	return err
 }
