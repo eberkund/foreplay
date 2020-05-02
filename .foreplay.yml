@@ -2,9 +2,5 @@ style: spinner
 hooks:
   - id: golangci-lint
     run: golangci-lint run
-
-#  - id: goreleaser snapshot
-#    run: goreleaser --snapshot --rm-dist
-
-#  - id: go test
-#    run: go test ./...
+  - id: go test
+    run: go test ./...

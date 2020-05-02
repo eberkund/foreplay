@@ -2,9 +2,11 @@ package run
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"foreplay/config"
+	"foreplay/mockstest"
 	"foreplay/output/plain"
 
 	"github.com/stretchr/testify/assert"
@@ -46,4 +48,27 @@ func TestHookError(t *testing.T) {
 	)
 	err = runner.Start()
 	assert.Error(t, err)
+}
+
+func TestSkip(t *testing.T) {
+	err := os.Setenv("FOREPLAY_SKIP_HOOKS", "true")
+	require.NoError(t, err)
+
+	shell, err := GetShell()
+	require.NoError(t, err)
+
+	m := mockstest.Registerable{}
+	m.AssertNotCalled(t, "Register")
+
+	runner := GetRun(
+		shell,
+		config.Config{
+			Hooks: []config.Hook{{
+				ID:  "bar",
+				Run: "exit 1",
+			}},
+		},
+		&m,
+	)
+	assert.NoError(t, runner.Start())
 }
