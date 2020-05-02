@@ -35,20 +35,14 @@ func GetPrinter(c config.Config) common.Registerable {
 	return output.GetOutput(c.Style, os.Stdout)
 }
 
-func GetExit() func(int) {
-	return os.Exit
-}
-
 func GetRun(
 	shell Shell,
 	c config.Config,
 	printer common.Registerable,
-	exit func(int),
 ) *Run {
 	return &Run{
 		Shell:   shell,
 		Printer: printer,
 		Hooks:   c.Hooks,
-		exit:    exit,
 	}
 }

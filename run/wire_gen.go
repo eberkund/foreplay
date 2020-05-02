@@ -17,7 +17,6 @@ func InitializeRunner() (*Run, error) {
 		return nil, err
 	}
 	registerable := GetPrinter(config)
-	v := GetExit()
-	run := GetRun(string2, config, registerable, v)
+	run := GetRun(string2, config, registerable)
 	return run, nil
 }

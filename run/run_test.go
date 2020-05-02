@@ -2,19 +2,21 @@ package run
 
 import (
 	"bytes"
-	"os"
 	"testing"
 
 	"foreplay/config"
 	"foreplay/output/plain"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRunStart(t *testing.T) {
 	var buf bytes.Buffer
+	shell, err := GetShell()
+	require.NoError(t, err)
 	runner := GetRun(
-		"sh",
+		shell,
 		config.Config{
 			Hooks: []config.Hook{{
 				ID:  "foo",
@@ -22,18 +24,18 @@ func TestRunStart(t *testing.T) {
 			}},
 		},
 		plain.New(&buf),
-		os.Exit,
 	)
-	runner.Start()
+	err = runner.Start()
+	require.NoError(t, err)
 	require.NotEmpty(t, buf.String())
 }
 
 func TestHookError(t *testing.T) {
 	var buf bytes.Buffer
-
-	var code int
+	shell, err := GetShell()
+	require.NoError(t, err)
 	runner := GetRun(
-		"sh",
+		shell,
 		config.Config{
 			Hooks: []config.Hook{{
 				ID:  "bar",
@@ -41,10 +43,7 @@ func TestHookError(t *testing.T) {
 			}},
 		},
 		plain.New(&buf),
-		func(c int) {
-			code = c
-		},
 	)
-	runner.Start()
-	require.Equal(t, 1, code)
+	err = runner.Start()
+	assert.Error(t, err)
 }

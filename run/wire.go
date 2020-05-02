@@ -12,7 +12,6 @@ func InitializeRunner() (*Run, error) {
 		GetPrinter,
 		GetShell,
 		GetRun,
-		GetExit,
 	)
 	return &Run{}, nil
 }

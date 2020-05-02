@@ -22,6 +22,5 @@ func runRun(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	r.Start()
-	return nil
+	return r.Start()
 }

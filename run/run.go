@@ -20,12 +20,11 @@ type Run struct {
 	Shell   string
 	Printer common.Registerable
 	Hooks   []config.Hook
-	exit    func(int)
 }
 
-func (r Run) Start() {
+func (r Run) Start() error {
 	if skip() {
-		return
+		return nil
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	exit := make(chan os.Signal, 1)
@@ -65,9 +64,7 @@ func (r Run) Start() {
 		}
 	}()
 	<-cleanup
-	if hookErr != nil {
-		r.exit(1)
-	}
+	return hookErr
 }
 
 func (r Run) createCmd(script string) *exec.Cmd {
