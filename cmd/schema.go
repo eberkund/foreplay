@@ -20,10 +20,7 @@ func init() {
 }
 
 func printConfigSchema(cmd *cobra.Command, args []string) error {
-	schema, err := config.Schema()
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprint(cmd.OutOrStderr(), string(schema))
+	schema := config.Schema()
+	_, err := fmt.Fprint(cmd.OutOrStderr(), string(schema))
 	return err
 }

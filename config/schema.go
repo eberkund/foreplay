@@ -7,8 +7,9 @@ import (
 )
 
 // Schema returns the config file JSON schema.
-func Schema() ([]byte, error) {
+func Schema() []byte {
 	reflector := jsonschema.Reflector{}
 	schema := reflector.Reflect(&Config{})
-	return json.MarshalIndent(schema, "", "  ")
+	jsonSchema, _ := json.MarshalIndent(schema, "", "  ")
+	return jsonSchema
 }

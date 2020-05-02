@@ -8,7 +8,7 @@ import (
 	"foreplay/output/plain"
 	"foreplay/output/spinner"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParseDriver(t *testing.T) {
@@ -23,7 +23,7 @@ func TestParseDriver(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.Input, func(t *testing.T) {
 			output := GetOutput(tc.Input, os.Stdout)
-			assert.IsType(t, tc.Expected, output)
+			require.IsType(t, tc.Expected, output)
 		})
 	}
 }

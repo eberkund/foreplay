@@ -41,10 +41,9 @@ func TestSchemaCommand(t *testing.T) {
 	rootCmd.SetOut(&b)
 	rootCmd.SetArgs([]string{"schema"})
 
-	expected, err := config.Schema()
-	require.NoError(t, err)
+	expected := config.Schema()
 
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 	require.NoError(t, err)
 	require.Equal(t, string(expected), b.String())
 }

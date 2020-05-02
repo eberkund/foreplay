@@ -5,14 +5,13 @@ import (
 	"testing"
 
 	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNoConfigFile(t *testing.T) {
 	Fs = afero.NewMemMapFs()
 	_, err := Get()
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestCanReadConfigFile(t *testing.T) {

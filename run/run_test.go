@@ -9,7 +9,6 @@ import (
 	"foreplay/mockstest"
 	"foreplay/output/plain"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -47,7 +46,7 @@ func TestHookError(t *testing.T) {
 		plain.New(&buf),
 	)
 	err = runner.Start()
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestSkip(t *testing.T) {
@@ -70,5 +69,5 @@ func TestSkip(t *testing.T) {
 		},
 		&m,
 	)
-	assert.NoError(t, runner.Start())
+	require.NoError(t, runner.Start())
 }

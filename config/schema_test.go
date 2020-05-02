@@ -12,8 +12,7 @@ func TestSchemaMatches(t *testing.T) {
 	pre, err := ioutil.ReadFile(path.Join("..", "schema.json"))
 	require.NoError(t, err)
 
-	generated, err := Schema()
-	require.NoError(t, err)
+	generated := Schema()
 
 	require.Equal(
 		t,
