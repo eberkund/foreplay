@@ -11,6 +11,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestRootCommand(t *testing.T) {
+	var b bytes.Buffer
+	rootCmd.SetOut(&b)
+	rootCmd.SetArgs([]string{})
+
+	Execute()
+	require.Contains(t, b.String(), "foreplay [command]")
+}
+
 func TestInitCommand(t *testing.T) {
 	install.Fs = afero.NewMemMapFs()
 
