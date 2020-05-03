@@ -7,7 +7,7 @@ before:
     - go mod download
 
 builds:
-  - binary: simulator
+  - binary: foreplay
     ldflags: -s -w
     goos:
       - windows
