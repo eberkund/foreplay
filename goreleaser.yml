@@ -37,11 +37,22 @@ brews:
       name: goreleaserbot
       email: goreleaser@carlosbecker.com
     homepage: "https://github.com/eberkund/foreplay"
-    description: Software to manage Git pre-commit hooks.
+    description: "Software to manage Git pre-commit hooks."
     test: |
       system "#{bin}/foreplay help"
     install: |
       bin.install "foreplay"
+
+scoop:
+  bucket:
+    owner: eberkund
+    name: scoop-foreplay
+  commit_author:
+    name: goreleaserbot
+    email: goreleaser@carlosbecker.com
+  homepage: "https://github.com/eberkund/foreplay"
+  description: "Software to manage Git pre-commit hooks."
+  license: Apache-2.0
 
 checksum:
   name_template: "checksums.txt"
