@@ -21,6 +21,13 @@ archives:
     files:
       - README.md
 
+nfpms:
+  - maintainer: Erik Berkun-Drevnig<erik@aloralabs.com>
+    homepage: https://github.com/eberkund/foreplay
+    description: A pre-commit hook manager.
+    formats:
+      - deb
+
 brews:
   - name: foreplay
     github:
