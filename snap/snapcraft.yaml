@@ -1,0 +1,23 @@
+name: foreplay
+version: git
+summary: A pre-commit hook manager
+description: |
+  A pre-commit hook manager
+grade: stable
+confinement: classic
+base: core18
+
+apps:
+  mongoose:
+    command: bin/foreplay
+    plugs: [home]
+
+parts:
+  mongoose:
+    plugin: go
+    source: .
+    build-packages:
+      - git
+      - build-essential
+    build-environment:
+      - GOBIN: $SNAPCRAFT_PART_INSTALL/bin

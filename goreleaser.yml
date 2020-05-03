@@ -21,6 +21,21 @@ archives:
     files:
       - README.md
 
+brews:
+  - name: foreplay
+    github:
+      owner: github-user
+      name: homebrew-tap
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    homepage: "https://github.com/eberkund/foreplay"
+    description: Software to manage Git pre-commit hooks.
+    test: |
+      system "#{bin}/foreplay help"
+    install: |
+      bin.install "foreplay"
+
 checksum:
   name_template: "checksums.txt"
 

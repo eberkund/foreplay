@@ -33,3 +33,17 @@ hooks:
   - id: golangci-lint
     run: golangci-lint run
 ```
+
+## Installation
+
+### macOS
+
+```shell script
+brew tap eberkund/foreplay
+```
+
+### Linux
+
+```shell script
+snap install foreplay
+```
