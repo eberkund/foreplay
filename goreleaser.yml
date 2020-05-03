@@ -24,8 +24,8 @@ archives:
 brews:
   - name: foreplay
     github:
-      owner: github-user
-      name: homebrew-tap
+      owner: eberkund
+      name: homebrew-foreplay
     commit_author:
       name: goreleaserbot
       email: goreleaser@carlosbecker.com

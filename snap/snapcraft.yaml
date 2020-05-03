@@ -4,7 +4,7 @@ summary: A pre-commit hook manager
 description: |
   A pre-commit hook manager
 grade: stable
-confinement: classic
+confinement: strict
 base: core18
 
 apps:
