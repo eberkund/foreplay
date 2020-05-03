@@ -49,3 +49,11 @@ brew install foreplay
 ```shell script
 snap install foreplay
 ```
+Or download install the _.deb_ from the releases page.
+
+### Windows
+
+```shell script
+scoop bucket add app https://github.com/eberkund/scoop-foreplay.git
+scoop install foreplay
+```
