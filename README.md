@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/eberkund/foreplay/branch/master/graph/badge.svg)](https://codecov.io/gh/eberkund/foreplay)
 [![Go Report Card](https://goreportcard.com/badge/github.com/eberkund/foreplay)](https://goreportcard.com/report/github.com/eberkund/foreplay)
 ![GitHub](https://img.shields.io/github/license/eberkund/foreplay)
+[![Snap Status](https://build.snapcraft.io/badge/eberkund/foreplay.svg)](https://snapcraft.io/foreplay)
 
 A pre-commit hook manager.
 
@@ -40,6 +41,7 @@ hooks:
 
 ```shell script
 brew tap eberkund/foreplay
+brew install foreplay
 ```
 
 ### Linux
