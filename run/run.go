@@ -3,12 +3,13 @@ package run
 import (
 	"bytes"
 	"context"
-	"errors"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strconv"
+	"sync"
 	"syscall"
+	"time"
 
 	"foreplay/config"
 	"foreplay/output/common"
@@ -20,25 +21,33 @@ type Run struct {
 	Shell   string
 	Printer common.Registerable
 	Hooks   []config.Hook
+	Timeout time.Duration
 }
 
 // Start takes the list of Hooks and executes them.
-func (r Run) Start() (err error) {
+func (r Run) Start() error {
 	if skip() {
 		return nil
 	}
-	ctx, cancel := context.WithCancel(context.Background())
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+
+	printerCtx, printerCancel := context.WithCancel(context.Background())
+	execCtx, execCancel := r.createContext()
 
 	results := make(chan common.Result)
-	cleanup := r.Printer.Register(ctx, r.Hooks, results)
-	group := errgroup.Group{}
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		r.Printer.Run(printerCtx, r.Hooks, results)
+		wg.Done()
+	}()
 
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+	group := errgroup.Group{}
 	for _, hook := range r.Hooks {
 		hook := hook
 		group.Go(func() error {
-			cmd := r.createCmd(hook.Run)
+			cmd := r.createCmd(execCtx, hook.Run)
 			out, err := cmd.Output()
 			results <- common.Result{
 				Hook: hook,
@@ -48,33 +57,33 @@ func (r Run) Start() (err error) {
 			return err
 		})
 	}
+
 	go func() {
-		err = group.Wait()
-		cancel()
+		<-exit
+		execCancel()
 	}()
-	func() {
-		for {
-			select {
-			case <-exit:
-				err = errors.New("user exit")
-				cancel()
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-	<-cleanup
-	return
+
+	err := group.Wait()
+	printerCancel()
+	wg.Wait()
+	return err
 }
 
-func (r Run) createCmd(script string) *exec.Cmd {
-	cmd := exec.Command(r.Shell)
+func (r Run) createContext() (context.Context, context.CancelFunc) {
+	if r.Timeout == 0 {
+		return context.WithCancel(context.Background())
+	}
+	return context.WithTimeout(context.Background(), r.Timeout)
+}
+
+func (r Run) createCmd(ctx context.Context, script string) *exec.Cmd {
+	cmd := exec.CommandContext(ctx, r.Shell)
 	cmd.Stdin = bytes.NewBuffer([]byte(script))
 	return cmd
 }
 
 func skip() bool {
-	foreplaySkipHooks := os.Getenv("FOREPLAY_SKIP_HOOKS")
+	foreplaySkipHooks := os.Getenv("FOREPLAY_SKIP")
 	skip, _ := strconv.ParseBool(foreplaySkipHooks)
 	return skip
 }

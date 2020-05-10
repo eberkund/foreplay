@@ -44,5 +44,6 @@ func GetRun(
 		Shell:   shell,
 		Printer: printer,
 		Hooks:   c.Hooks,
+		Timeout: c.Timeout,
 	}
 }

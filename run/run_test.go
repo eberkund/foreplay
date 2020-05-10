@@ -50,14 +50,14 @@ func TestHookError(t *testing.T) {
 }
 
 func TestSkip(t *testing.T) {
-	err := os.Setenv("FOREPLAY_SKIP_HOOKS", "true")
+	err := os.Setenv("FOREPLAY_SKIP", "true")
 	require.NoError(t, err)
 
 	shell, err := GetShell()
 	require.NoError(t, err)
 
 	m := mockstest.Registerable{}
-	m.AssertNotCalled(t, "Register")
+	m.AssertNotCalled(t, "Run")
 
 	runner := GetRun(
 		shell,

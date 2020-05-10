@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"os/exec"
+	"sync"
 	"testing"
 	"time"
 
@@ -18,9 +19,16 @@ func TestSpinnersOutput(t *testing.T) {
 	results := make(chan common.Result)
 	var buf bytes.Buffer
 	p := New(&buf)
-	done := p.Register(ctx, []config.Hook{}, results)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		p.Run(ctx, []config.Hook{}, results)
+		wg.Done()
+	}()
 	cancel()
-	<-done
+	wg.Wait()
+
 	require.Empty(t, buf.String())
 }
 
@@ -33,26 +41,31 @@ func TestSpinnerPrintsResults(t *testing.T) {
 		{ID: "foo"},
 		{ID: "bar"},
 	}
-	done := p.Register(ctx, hooks, results)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		time.Sleep(125 * time.Millisecond)
-		results <- common.Result{
-			Hook: config.Hook{
-				ID: "foo",
-			},
-			Err: nil,
-			Out: []byte("hello world"),
-		}
-		results <- common.Result{
-			Hook: config.Hook{
-				ID: "bar",
-			},
-			Err: &exec.ExitError{},
-			Out: nil,
-		}
-		cancel()
+		p.Run(ctx, hooks, results)
+		wg.Done()
 	}()
-	<-done
+	time.Sleep(125 * time.Millisecond)
+	results <- common.Result{
+		Hook: config.Hook{
+			ID: "foo",
+		},
+		Err: nil,
+		Out: []byte("hello world"),
+	}
+	results <- common.Result{
+		Hook: config.Hook{
+			ID: "bar",
+		},
+		Err: &exec.ExitError{},
+		Out: nil,
+	}
+	time.Sleep(125 * time.Millisecond)
+	cancel()
+	wg.Wait()
 
 	require.Contains(t, buf.String(), `| foo | ⣽ |`)
 	require.Contains(t, buf.String(), `| bar | ⣽ |`)

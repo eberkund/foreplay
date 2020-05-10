@@ -5,11 +5,15 @@
     "Config": {
       "required": [
         "style",
+        "timeout",
         "hooks"
       ],
       "properties": {
         "style": {
           "type": "string"
+        },
+        "timeout": {
+          "type": "integer"
         },
         "hooks": {
           "items": {

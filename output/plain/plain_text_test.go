@@ -3,6 +3,7 @@ package plain
 import (
 	"bytes"
 	"context"
+	"sync"
 	"testing"
 
 	"foreplay/config"
@@ -16,9 +17,16 @@ func TestPlainTextOutput(t *testing.T) {
 	results := make(chan common.Result)
 	var buf bytes.Buffer
 	p := New(&buf)
-	done := p.Register(ctx, []config.Hook{}, results)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		p.Run(ctx, []config.Hook{}, results)
+		wg.Done()
+	}()
 	cancel()
-	<-done
+	wg.Wait()
+
 	require.Empty(t, buf.String())
 }
 
@@ -27,15 +35,19 @@ func TestPlainPrintsResults(t *testing.T) {
 	results := make(chan common.Result)
 	var buf bytes.Buffer
 	p := New(&buf)
-	done := p.Register(ctx, []config.Hook{}, results)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		results <- common.Result{
-			Hook: config.Hook{},
-			Err:  nil,
-			Out:  []byte("hello world"),
-		}
-		cancel()
+		p.Run(ctx, []config.Hook{}, results)
+		wg.Done()
 	}()
-	<-done
+	results <- common.Result{
+		Hook: config.Hook{},
+		Err:  nil,
+		Out:  []byte("hello world"),
+	}
+	cancel()
+	wg.Wait()
 	require.Contains(t, buf.String(), "hello world")
 }

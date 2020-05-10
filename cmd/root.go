@@ -8,8 +8,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "foreplay",
-	Short: "A tool to manage your Git pre-commit hooks",
+	Use:          "foreplay",
+	Short:        "A tool to manage your Git pre-commit hooks",
+	SilenceUsage: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -16,18 +16,7 @@ type Registerable struct {
 	mock.Mock
 }
 
-// Register provides a mock function with given fields: ctx, hooks, results
-func (_m *Registerable) Register(ctx context.Context, hooks []config.Hook, results <-chan common.Result) chan interface{} {
-	ret := _m.Called(ctx, hooks, results)
-
-	var r0 chan interface{}
-	if rf, ok := ret.Get(0).(func(context.Context, []config.Hook, <-chan common.Result) chan interface{}); ok {
-		r0 = rf(ctx, hooks, results)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(chan interface{})
-		}
-	}
-
-	return r0
+// Run provides a mock function with given fields: ctx, hooks, results
+func (_m *Registerable) Run(ctx context.Context, hooks []config.Hook, results <-chan common.Result) {
+	_m.Called(ctx, hooks, results)
 }

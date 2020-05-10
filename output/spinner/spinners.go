@@ -39,29 +39,23 @@ func (p *spinnerPrinter) createHookJobs(hooks []config.Hook) {
 	}
 }
 
-func (p *spinnerPrinter) Register(ctx context.Context, hooks []config.Hook, results <-chan common.Result) chan interface{} {
-	done := make(chan interface{})
-	go func() {
-		ansi.CursorHide()
-		defer ansi.CursorShow()
-		defer close(done)
+func (p *spinnerPrinter) Run(ctx context.Context, hooks []config.Hook, results <-chan common.Result) {
+	ansi.CursorHide()
+	defer ansi.CursorShow()
+	p.createHookJobs(hooks)
 
-		p.createHookJobs(hooks)
-
-		for {
-			select {
-			case <-p.ticker.C:
-				p.refresh(true)
-			case r := <-results:
-				success := r.Err == nil
-				p.spinners[r.Hook.ID].success = &success
-			case <-ctx.Done():
-				p.refresh(false)
-				return
-			}
+	for {
+		select {
+		case <-p.ticker.C:
+			p.refresh(true)
+		case r := <-results:
+			success := r.Err == nil
+			p.spinners[r.Hook.ID].success = &success
+		case <-ctx.Done():
+			p.refresh(false)
+			return
 		}
-	}()
-	return done
+	}
 }
 
 func (p *spinnerPrinter) refresh(reset bool) {

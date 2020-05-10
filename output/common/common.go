@@ -13,5 +13,5 @@ type Result struct {
 }
 
 type Registerable interface {
-	Register(ctx context.Context, hooks []config.Hook, results <-chan Result) chan interface{}
+	Run(ctx context.Context, hooks []config.Hook, results <-chan Result)
 }
