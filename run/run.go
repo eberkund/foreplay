@@ -22,7 +22,8 @@ type Run struct {
 	Hooks   []config.Hook
 }
 
-func (r Run) Start() error {
+// Start takes the list of Hooks and executes them.
+func (r Run) Start() (err error) {
 	if skip() {
 		return nil
 	}
@@ -30,7 +31,6 @@ func (r Run) Start() error {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 
-	var hookErr error
 	results := make(chan common.Result)
 	cleanup := r.Printer.Register(ctx, r.Hooks, results)
 	group := errgroup.Group{}
@@ -49,14 +49,14 @@ func (r Run) Start() error {
 		})
 	}
 	go func() {
-		hookErr = group.Wait()
+		err = group.Wait()
 		cancel()
 	}()
 	func() {
 		for {
 			select {
 			case <-exit:
-				hookErr = errors.New("user exit")
+				err = errors.New("user exit")
 				cancel()
 			case <-ctx.Done():
 				return
@@ -64,7 +64,7 @@ func (r Run) Start() error {
 		}
 	}()
 	<-cleanup
-	return hookErr
+	return
 }
 
 func (r Run) createCmd(script string) *exec.Cmd {
