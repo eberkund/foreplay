@@ -48,6 +48,16 @@ func TestSchemaCommand(t *testing.T) {
 	require.Equal(t, string(expected), b.String())
 }
 
+func TestVersionCommand(t *testing.T) {
+	var b bytes.Buffer
+	rootCmd.SetOut(&b)
+	rootCmd.SetArgs([]string{"version"})
+
+	err := rootCmd.Execute()
+	require.NoError(t, err)
+	require.Contains(t, b.String(), version)
+}
+
 func TestRunCommandWithNoConfig(t *testing.T) {
 	config.Fs = afero.NewMemMapFs()
 
