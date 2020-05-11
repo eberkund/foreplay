@@ -41,8 +41,6 @@ func (r Run) Start() error {
 		wg.Done()
 	}()
 
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 	group := errgroup.Group{}
 	for _, hook := range r.Hooks {
 		hook := hook
@@ -58,6 +56,8 @@ func (r Run) Start() error {
 		})
 	}
 
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-exit
 		execCancel()
