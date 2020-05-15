@@ -57,3 +57,9 @@ Or download install the _.deb_ from the releases page.
 scoop bucket add app https://github.com/eberkund/scoop-foreplay.git
 scoop install foreplay
 ```
+
+### Go
+
+```shell script
+go install -u github.com/eberkund/foreplay
+```
