@@ -19,8 +19,9 @@ func Init() error {
 
 func Install() error {
 	fmt.Println("installing to", path.Join(".git", "hooks"))
-	contents := `#!/usr/bin/env bash
-exec foreplay run
+	contents := `#!/bin/sh
+exec &> /dev/tty
+foreplay run
 `
 	return afero.WriteFile(Fs, PreCommitHookPath(), []byte(contents), 0755)
 }

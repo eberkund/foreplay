@@ -14,8 +14,9 @@ func TestInstall(t *testing.T) {
 	require.NoError(t, err)
 	contents, err := afero.ReadFile(Fs, PreCommitHookPath())
 	require.NoError(t, err)
-	require.Equal(t, `#!/usr/bin/env bash
-exec foreplay run
+	require.Equal(t, `#!/bin/sh
+exec &> /dev/tty
+foreplay run
 `, string(contents))
 }
 
