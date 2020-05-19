@@ -29,7 +29,8 @@ func TestInit(t *testing.T) {
 	contents, err := afero.ReadFile(Fs, ".foreplay.yml")
 	require.NoError(t, err)
 	require.Equal(t, `hooks:
-#  - id: golangci-lint
-#    run: run
+#  - id: example sleep
+#    run: |
+#      sleep 5
 `, string(contents))
 }

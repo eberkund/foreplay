@@ -11,8 +11,9 @@ var Fs = afero.NewOsFs()
 
 func Init() error {
 	contents := `hooks:
-#  - id: golangci-lint
-#    run: run
+#  - id: example sleep
+#    run: |
+#      sleep 5
 `
 	return afero.WriteFile(Fs, ".foreplay.yml", []byte(contents), 0755)
 }
