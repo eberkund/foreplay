@@ -9,7 +9,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Args:  cobra.NoArgs,
-	Short: "Initializes the repo with an empty config file.",
+	Short: "Create an empty config file",
 	RunE:  runInit,
 }
 

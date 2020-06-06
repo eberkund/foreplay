@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"path"
 	"testing"
 
 	"foreplay/config"
@@ -33,6 +34,17 @@ func TestInstallCommand(t *testing.T) {
 
 	rootCmd.SetArgs([]string{"install"})
 	err := rootCmd.Execute()
+	require.NoError(t, err)
+}
+
+func TestRemoveCommand(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, path.Join(".git", "hooks", "pre-commit"), []byte{}, 0644)
+	require.NoError(t, err)
+	install.Fs = fs
+
+	rootCmd.SetArgs([]string{"remove"})
+	err = rootCmd.Execute()
 	require.NoError(t, err)
 }
 

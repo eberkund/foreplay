@@ -12,7 +12,7 @@ var (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Display the version.",
+	Short: "Display the version",
 	Args:  cobra.NoArgs,
 	RunE:  printVersion,
 }

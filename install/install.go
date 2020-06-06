@@ -1,7 +1,6 @@
 package install
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/spf13/afero"
@@ -19,12 +18,15 @@ func Init() error {
 }
 
 func Install() error {
-	fmt.Println("installing to", path.Join(".git", "hooks"))
 	contents := `#!/bin/sh
 exec &> /dev/tty
 foreplay run
 `
 	return afero.WriteFile(Fs, PreCommitHookPath(), []byte(contents), 0755)
+}
+
+func Remove() error {
+	return Fs.Remove(PreCommitHookPath())
 }
 
 func PreCommitHookPath() string {

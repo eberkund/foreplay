@@ -10,7 +10,7 @@ import (
 
 var schemaCmd = &cobra.Command{
 	Use:    "schema",
-	Short:  "Display the config file JSON schema.",
+	Short:  "Display the config file JSON schema",
 	Args:   cobra.NoArgs,
 	RunE:   printConfigSchema,
 	Hidden: true,

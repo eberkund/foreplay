@@ -8,7 +8,7 @@ import (
 
 var runCmd = &cobra.Command{
 	Use:   "run [hook]",
-	Short: "Run hooks.",
+	Short: "Run hooks",
 	Args:  cobra.NoArgs,
 	RunE:  runRun,
 }
