@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"foreplay/config"
-	"foreplay/mockstest"
-	"foreplay/output/plain"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/mockstest"
+	"github.com/eberkund/foreplay/output/plain"
 
 	"github.com/stretchr/testify/require"
 )

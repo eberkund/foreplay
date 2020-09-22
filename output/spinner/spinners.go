@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"foreplay/config"
-	"foreplay/output/common"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/output/common"
 
 	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"

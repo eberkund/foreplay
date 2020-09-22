@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"foreplay/config"
-	"foreplay/output/common"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/output/common"
 )
 
 type plainPrinter struct {

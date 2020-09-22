@@ -6,8 +6,8 @@ import (
 	"sync"
 	"testing"
 
-	"foreplay/config"
-	"foreplay/output/common"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/output/common"
 
 	"github.com/stretchr/testify/require"
 )

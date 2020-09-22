@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"foreplay/config"
-	"foreplay/output/common"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/output/common"
 
 	"golang.org/x/sync/errgroup"
 )

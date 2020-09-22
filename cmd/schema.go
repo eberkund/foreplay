@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"foreplay/config"
+	"github.com/eberkund/foreplay/config"
 
 	"github.com/spf13/cobra"
 )

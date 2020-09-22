@@ -5,9 +5,9 @@ import (
 	"os"
 	"os/exec"
 
-	"foreplay/config"
-	"foreplay/output"
-	"foreplay/output/common"
+	"github.com/eberkund/foreplay/config"
+	"github.com/eberkund/foreplay/output"
+	"github.com/eberkund/foreplay/output/common"
 )
 
 type Shell = string

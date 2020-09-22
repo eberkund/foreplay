@@ -3,7 +3,7 @@ package common
 import (
 	"context"
 
-	"foreplay/config"
+	"github.com/eberkund/foreplay/config"
 )
 
 type Result struct {

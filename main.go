@@ -3,7 +3,7 @@
 package main
 
 import (
-	"foreplay/cmd"
+	"github.com/eberkund/foreplay/cmd"
 )
 
 func main() {

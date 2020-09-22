@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"foreplay/install"
+	"github.com/eberkund/foreplay/install"
 
 	"github.com/spf13/cobra"
 )

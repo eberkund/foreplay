@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"foreplay/output/common"
-	"foreplay/output/plain"
-	"foreplay/output/spinner"
+	"github.com/eberkund/foreplay/output/common"
+	"github.com/eberkund/foreplay/output/plain"
+	"github.com/eberkund/foreplay/output/spinner"
 
 	"github.com/stretchr/testify/require"
 )
