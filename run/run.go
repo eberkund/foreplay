@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"strconv"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/eberkund/foreplay/config"
@@ -17,6 +16,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// Run is the main dependency container.
 type Run struct {
 	Shell   string
 	Printer common.Registerable
@@ -46,7 +46,7 @@ func (r Run) Start() error {
 		hook := hook
 		group.Go(func() error {
 			cmd := r.createCmd(execCtx, hook.Run)
-			out, err := cmd.Output()
+			out, err := cmd.CombinedOutput()
 			results <- common.Result{
 				Hook: hook,
 				Err:  err,
@@ -56,8 +56,9 @@ func (r Run) Start() error {
 		})
 	}
 
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+	// Gracefully exit
+	exit := make(chan os.Signal)
+	signal.Notify(exit)
 	go func() {
 		<-exit
 		execCancel()

@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/alecthomas/jsonschema v0.0.0-20200530073317-71f438968921
+	github.com/eiannone/keyboard v0.0.0-20200508000154-caf4b762e807
 	github.com/fatih/color v1.9.0
 	github.com/google/wire v0.4.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
@@ -14,8 +15,8 @@ require (
 	github.com/spf13/afero v1.4.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.6.1
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/sys v0.0.0-20200916084744-dbad9cb7cb7a // indirect
+	golang.org/x/sys v0.0.0-20200922070232-aee5d888a860 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )

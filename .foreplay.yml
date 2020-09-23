@@ -4,3 +4,5 @@ hooks:
     run: golangci-lint run
   - id: go test
     run: go test ./...
+  # - id: sleep loop
+    # run: while true; do sleep 1; done

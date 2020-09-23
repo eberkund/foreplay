@@ -8,8 +8,6 @@ import (
 
 	"github.com/eberkund/foreplay/config"
 	"github.com/eberkund/foreplay/output/common"
-
-	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"
 	"github.com/olekukonko/tablewriter"
 )
@@ -20,11 +18,7 @@ type spinnerPrinter struct {
 	writer   io.Writer
 }
 
-type spinner struct {
-	success *bool
-	ticks   int
-}
-
+// New initializes a spinner printer.
 func New(writer io.Writer) common.Registerable {
 	return &spinnerPrinter{
 		spinners: make(map[string]*spinner),
@@ -33,16 +27,11 @@ func New(writer io.Writer) common.Registerable {
 	}
 }
 
-func (p *spinnerPrinter) createHookJobs(hooks []config.Hook) {
-	for _, v := range hooks {
-		p.spinners[v.ID] = &spinner{}
-	}
-}
-
 func (p *spinnerPrinter) Run(ctx context.Context, hooks []config.Hook, results <-chan common.Result) {
 	ansi.CursorHide()
 	defer ansi.CursorShow()
 	p.createHookJobs(hooks)
+	go discardKeyboardInput()
 
 	for {
 		select {
@@ -55,6 +44,12 @@ func (p *spinnerPrinter) Run(ctx context.Context, hooks []config.Hook, results <
 			p.refresh(false)
 			return
 		}
+	}
+}
+
+func (p *spinnerPrinter) createHookJobs(hooks []config.Hook) {
+	for _, v := range hooks {
+		p.spinners[v.ID] = &spinner{}
 	}
 }
 
@@ -80,17 +75,4 @@ func (p *spinnerPrinter) refresh(reset bool) {
 	if reset {
 		ansi.CursorUp(len(p.spinners) + 2)
 	}
-}
-
-func (h spinner) progressChar() string {
-	charSet := []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
-	successSymbol := "✓"
-	errorSymbol := "✗"
-	if h.success == nil {
-		return charSet[h.ticks%len(charSet)]
-	}
-	if *h.success {
-		return color.GreenString(successSymbol)
-	}
-	return color.RedString(errorSymbol)
 }

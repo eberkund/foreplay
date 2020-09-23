@@ -1,7 +1,9 @@
 {
     "go.inferGopath": false,
     "files.exclude": {
-        ".idea": true
+        ".idea": true,
+        "choco": true,
+        "dist": true
     },
     "yaml.schemas": {
         "/schema.json": ["/.foreplay.yml"]
