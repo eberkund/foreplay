@@ -23,5 +23,5 @@ parts:
       - GOBIN: $SNAPCRAFT_PART_INSTALL/bin
     override-build: |
       export VERSION=$(git describe --tags --abbrev=0)
-      go install -ldflags="-X foreplay/cmd.version=$VERSION"
+      go install -ldflags="-X github.com/eberkund/foreplay/cmd.version=$VERSION"
       snapcraftctl set-version $(foreplay version)

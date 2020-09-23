@@ -8,7 +8,7 @@ before:
 
 builds:
   - binary: foreplay
-    ldflags: -s -w -X foreplay/cmd.version={{.Version}}
+    ldflags: -s -w -X github.com/eberkund/foreplay/cmd.version={{.Version}}
     goos:
       - windows
       - linux
