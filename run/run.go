@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strconv"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/eberkund/foreplay/config"
@@ -58,7 +59,7 @@ func (r Run) Start() error {
 
 	// Gracefully exit
 	exit := make(chan os.Signal)
-	signal.Notify(exit)
+	signal.Notify(exit, syscall.SIGINT)
 	go func() {
 		<-exit
 		execCancel()

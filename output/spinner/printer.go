@@ -8,6 +8,7 @@ import (
 
 	"github.com/eberkund/foreplay/config"
 	"github.com/eberkund/foreplay/output/common"
+	"github.com/eiannone/keyboard"
 	"github.com/k0kubun/go-ansi"
 	"github.com/olekukonko/tablewriter"
 )
@@ -31,7 +32,7 @@ func (p *spinnerPrinter) Run(ctx context.Context, hooks []config.Hook, results <
 	ansi.CursorHide()
 	defer ansi.CursorShow()
 	p.createHookJobs(hooks)
-	go discardKeyboardInput()
+	// go discardKeyboardInput()
 
 	for {
 		select {
@@ -44,6 +45,15 @@ func (p *spinnerPrinter) Run(ctx context.Context, hooks []config.Hook, results <
 			p.refresh(false)
 			return
 		}
+	}
+}
+
+//nolint
+func discardKeyboardInput() {
+	keys, _ := keyboard.GetKeys(1)
+	defer keyboard.Close()
+	for {
+		<-keys
 	}
 }
 

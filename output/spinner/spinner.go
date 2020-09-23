@@ -1,8 +1,6 @@
 package spinner
 
 import (
-	"github.com/eiannone/keyboard"
-
 	"github.com/fatih/color"
 )
 
@@ -22,12 +20,4 @@ func (h spinner) progressChar() string {
 		return color.GreenString(successSymbol)
 	}
 	return color.RedString(errorSymbol)
-}
-
-func discardKeyboardInput() {
-	keys, _ := keyboard.GetKeys(1)
-	defer keyboard.Close()
-	for {
-		<-keys
-	}
 }
