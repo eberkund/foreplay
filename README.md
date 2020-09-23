@@ -61,5 +61,5 @@ scoop install foreplay
 ### Go
 
 ```shell script
-go install -u github.com/eberkund/foreplay
+go install github.com/eberkund/foreplay
 ```
